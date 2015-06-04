@@ -49,7 +49,8 @@ class Crossword {
 			return None;
 		}
 		var cell = column[y];
-		return cell!=null ? Some(cell) : None;
+		// _ = ASCII 95
+		return (cell!=null && cell!=95) ? Some(cell) : None;
 
 	}
 
@@ -139,7 +140,7 @@ class Crossword {
 						set(pos.x, pos.y, wordC);		// Set char in board
 						var found = checkWordIsInSet(pos, remainingWords);
 						pos.dir = pos.dir==S ? E : S;	// Restore dir
-						set(pos.x, pos.y, null);		// Unset char
+						set(pos.x, pos.y, "_");		// Unset char
 						if (found) {
 							score+=50;		// Greatly increase score if putting this word generates another crossed word
 						} else {
@@ -193,18 +194,55 @@ class Crossword {
 		}
 	}
 
-	function toString() : String {
+	public function toString() : String {
 
-		var ret = "\n";
+		#if !js
+		var lineEnd = "\n";
+		#end
+
+		var ret = "";
+		#if js
+		ret+="<table>";
+		#else
+		ret += lineEnd;
+		#end
+
 		for (y in minY...maxY+1) {
+			#if js
+			ret += "<tr>";
+			#end
 			for (x in minX...maxX+1) {
+				#if js
+				ret += "<td>";
+				#end
 				switch (get(x, y)) {
-					case Some(cell):	ret+='$cell, ';
-					case None:			ret+='_, ';
+					case Some(cell): {
+						#if js
+						ret+='$cell';
+						#else
+						ret+='$cell, ';
+						#end
+					}
+					case None:{
+						#if !js
+						ret+='_, ';
+						#end
+					}
 				}
+				#if js
+				ret += "</td>";
+				#end
 			}
-			ret+='\n';
+			#if js
+			ret += "</tr>";
+			#else
+			ret+=lineEnd;
+			#end
 		}
+
+		#if js
+		ret+="</table>";
+		#end
 		return ret;
 	}
 

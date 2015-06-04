@@ -1,4 +1,7 @@
 #-swf bin/test.swf
--neko bin/test.n
+#-neko bin/test.n
+#-java bin/java
+#-dce no
+-js bin/js/test.js
 -cp src
 -main Main

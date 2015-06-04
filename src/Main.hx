@@ -20,7 +20,9 @@ class Main {
 			"camello",
 			"jirafa",
 			"teclado",
-			"oximoron"
+			"oximoron",
+			"otaku",
+			"expresso"
 		];
 
 		testWords.sort(function(x : String, y : String) return x.length<y.length ? 1 : -1);
@@ -43,8 +45,11 @@ class Main {
 			s.remove(w);
 		}
 		
+		#if js
+		js.Browser.document.getElementById("haxe:trace").innerHTML = crossword.toString();
+		#else
 		trace(crossword);
-
+		#end
 	}
 
 }
