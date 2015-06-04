@@ -1,0 +1,4 @@
+#-swf bin/test.swf
+-neko bin/test.n
+-cp src
+-main Main
