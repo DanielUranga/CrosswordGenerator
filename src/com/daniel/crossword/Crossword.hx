@@ -4,6 +4,7 @@ import com.daniel.crossword.Direction;
 import com.daniel.crossword.StringSet;
 import haxe.ds.Option;
 
+typedef WordPositionScore = {pos:WordPosition, score:Int};
 typedef Column = Map<Int, Char>;	// Cell id (Y) -> Cell
 typedef Board = Map<Int, Column>;	// Row id (X) -> Column
 
@@ -42,6 +43,19 @@ class Crossword {
 
 	}
 
+	public function copy() : Crossword {
+		var copy = new Crossword();
+		for (y in minY...maxY) {
+			for (x in minX...maxX) {
+				switch (get(x, y)) {
+					case Some(c):	copy.set(x, y, c);
+					case None:		{}
+				}
+			}
+		}
+		return copy;
+	}
+
 	public function get(x : Int, y : Int) : Option<Char> {
 
 		var column = board[x];
@@ -74,7 +88,7 @@ class Crossword {
 
 	// Checks if word that has a letter in "wordPos" is in the set "dict"
 	public function checkWordIsInSet(wordPos : WordPosition, dict : StringSet) : Bool {
-		
+
 		if (get(wordPos.x, wordPos.y)==None) {
 			return false;
 		}
@@ -117,7 +131,7 @@ class Crossword {
 		}
 		var delta90 = DirectionUtil.getRotated90Delta(pos.dir);
 		var delta270 = DirectionUtil.getRotated270Delta(pos.dir);
-		
+
 		for (i in 0...word.length) {
 			// Score-- for each letter outside the current board
 			if (pos.x<minX || pos.x>maxX || pos.y<minY || pos.y>maxY) {
@@ -160,7 +174,7 @@ class Crossword {
 
 	}
 
-	public function getWordPositionsScores(word : String, remainingWords : StringSet) : Array<{pos:WordPosition, score:Int}> {
+	public function getWordPositionsScores(word : String, remainingWords : StringSet) : Array<WordPositionScore> {
 		var ret = [];
 		var x = 0;
 		var y = 0;
@@ -192,6 +206,23 @@ class Crossword {
 			pos.x+=delta.x;
 			pos.y+=delta.y;
 		}
+	}
+
+	function boardArea() : Int {
+		return ((maxX+1)-minX)*((maxY+1)-minY);
+	}
+
+	public function score() : Int {
+		var emptyCells = 0;
+		for (y in minY...maxY+1) {
+			for (x in minX...maxX+1) {
+				switch (get(x, y)) {
+					case None: emptyCells++;
+					default: {}
+				}
+			}
+		}
+		return -emptyCells;
 	}
 
 	public function toString() : String {
@@ -246,8 +277,12 @@ class Crossword {
 		return ret;
 	}
 
-	function boardArea() : Int {
-		return ((maxX+1)-minX)*((maxY+1)-minY);
+	public function printCrossword() {
+		#if js
+		js.Browser.document.getElementById("haxe:trace").innerHTML = toString();
+		#else
+		trace('${maxX-minX+1}, ${maxY-minY+1}\n${toString()}');
+		#end
 	}
 
 }

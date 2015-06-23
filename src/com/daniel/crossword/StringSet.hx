@@ -5,9 +5,11 @@ import haxe.ds.Vector;
 class StringSet {
 
 	var wordHash : Vector<Array<String>>;
+	public var size(default, null) : Int;
 
 	public function new() {
 		wordHash = new Vector<Array<String>>(1024);
+		size = 0;
 	}
 
 	/**
@@ -35,6 +37,7 @@ class StringSet {
 		} else {
 			arr.push(s);
 		}
+		size++;
 	}
 
 	public function has(s : String) : Bool {
@@ -58,6 +61,15 @@ class StringSet {
 			return;
 		}
 		arr.remove(s);
+		size--;
+	}
+
+	public static function fromArray(words : Array<String>) {
+		var s = new StringSet();
+		for (w in words) {
+			s.put(w);
+		}
+		return s;
 	}
 
 }
