@@ -47,24 +47,24 @@ class Crossword {
 		var copy = new Crossword();
 		for (y in minY...maxY) {
 			for (x in minX...maxX) {
-				switch (get(x, y)) {
-					case Some(c):	copy.set(x, y, c);
-					case None:		{}
+				var c = get(x, y);
+				if (c!=emptyVal) {
+					copy.set(x, y, c);
 				}
 			}
 		}
 		return copy;
 	}
 
-	public function get(x : Int, y : Int) : Option<Char> {
+	public function get(x : Int, y : Int) : Char {
 
 		var column = board[x];
 		if (column==null) {
-			return None;
+			return emptyVal;
 		}
 		var cell = column[y];
 		// _ = ASCII 95
-		return (cell!=null && cell!=95) ? Some(cell) : None;
+		return (cell!=null && cell!=95) ? cell : emptyVal;
 
 	}
 
@@ -89,7 +89,7 @@ class Crossword {
 	// Checks if word that has a letter in "wordPos" is in the set "dict"
 	public function checkWordIsInSet(wordPos : WordPosition, dict : StringSet) : Bool {
 
-		if (get(wordPos.x, wordPos.y)==None) {
+		if (get(wordPos.x, wordPos.y)==emptyVal) {
 			return false;
 		}
 		var wordPos = wordPos.copy();
@@ -97,21 +97,14 @@ class Crossword {
 		var word = "";
 		var normal = DirectionUtil.getDelta(wordPos.dir);
 		var reverse = DirectionUtil.getRotated180Delta(wordPos.dir);
-		while (get(wordPos.x+reverse.x, wordPos.y+reverse.y)!=None) {
+		while (get(wordPos.x+reverse.x, wordPos.y+reverse.y)!=emptyVal) {
 			wordPos.x+=reverse.x;
 			wordPos.y+=reverse.y;
 		}
 		// Now wordPos is at start of word
-
-		while (true) {
-			switch (get(wordPos.x, wordPos.y)) {
-				case Some(c): {
-					word += c;
-				}
-				case None: {
-					break;
-				}
-			}
+		var c : Char;
+		while ((c = get(wordPos.x, wordPos.y))!=emptyVal) {
+			word += c;
 			wordPos.x+=normal.x;
 			wordPos.y+=normal.y;
 		}
@@ -126,7 +119,7 @@ class Crossword {
 		var score = 100;
 		var delta = DirectionUtil.getDelta(pos.dir);
 		var delta180 = DirectionUtil.getRotated180Delta(pos.dir);
-		if (get(pos.x+delta180.x, pos.y+delta180.y)!=None) {
+		if (get(pos.x+delta180.x, pos.y+delta180.y)!=emptyVal) {
 			return -999;
 		}
 		var delta90 = DirectionUtil.getRotated90Delta(pos.dir);
@@ -139,35 +132,29 @@ class Crossword {
 			}
 
 			var wordC = word.charAt(i);
-			switch (get(pos.x, pos.y)) {
-				case Some(boardC): {
-					if (boardC==wordC) {
-						score+=10;			// Increase score for crossing words
-					} else {
-						return -999;
-					}
+			var boardC = get(pos.x, pos.y);
+			if (boardC!=emptyVal) {
+				if (boardC==wordC) {
+					score+=10;			// Increase score for crossing words
+				} else {
+					return -999;
 				}
-				case None: {
-					if (get(pos.x+delta90.x, pos.y+delta90.y)!=None || get(pos.x+delta270.x, pos.y+delta270.y)!=None) {
-
-						pos.dir = pos.dir==S ? E : S;	// Rotate dir
-						set(pos.x, pos.y, wordC);		// Set char in board
-						var found = checkWordIsInSet(pos, remainingWords);
-						pos.dir = pos.dir==S ? E : S;	// Restore dir
-						set(pos.x, pos.y, "_");		// Unset char
-						if (found) {
-							score+=50;		// Greatly increase score if putting this word generates another crossed word
-						} else {
-							return -999;
-						}
-
-					}
+			} else if (get(pos.x+delta90.x, pos.y+delta90.y)!=emptyVal || get(pos.x+delta270.x, pos.y+delta270.y)!=emptyVal) {
+				pos.dir = pos.dir==S ? E : S;	// Rotate dir
+				set(pos.x, pos.y, wordC);		// Set char in board
+				var found = checkWordIsInSet(pos, remainingWords);
+				pos.dir = pos.dir==S ? E : S;	// Restore dir
+				set(pos.x, pos.y, emptyVal);	// Unset char
+				if (found) {
+					score+=50;		// Greatly increase score if putting this word generates another crossed word
+				} else {
+					return -999;
 				}
 			}
 			pos.x+=delta.x;
 			pos.y+=delta.y;
 		}
-		if (get(pos.x, pos.y)!=None) {
+		if (get(pos.x, pos.y)!=emptyVal) {
 			return -999;
 		}
 		return score;
@@ -213,16 +200,18 @@ class Crossword {
 	}
 
 	public function score() : Int {
+		
 		var emptyCells = 0;
 		for (y in minY...maxY+1) {
 			for (x in minX...maxX+1) {
-				switch (get(x, y)) {
-					case None: emptyCells++;
-					default: {}
+				if (get(x, y)==emptyVal) {
+					emptyCells++;
 				}
 			}
 		}
 		return -emptyCells;
+		
+		//return -Std.int(Math.max(maxX-minX, maxY-minY));
 	}
 
 	public function toString() : String {
@@ -246,19 +235,17 @@ class Crossword {
 				#if js
 				ret += "<td>";
 				#end
-				switch (get(x, y)) {
-					case Some(cell): {
-						#if js
-						ret+='$cell';
-						#else
-						ret+='$cell, ';
-						#end
-					}
-					case None:{
-						#if !js
-						ret+='_, ';
-						#end
-					}
+				var cell = get(x, y);
+				if (cell!=emptyVal) {
+					#if js
+					ret+='$cell';
+					#else
+					ret+='$cell, ';
+					#end
+				} else {
+					#if !js
+					ret+='_, ';
+					#end
 				}
 				#if js
 				ret += "</td>";
