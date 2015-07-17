@@ -2,6 +2,8 @@
 #-neko bin/test.n
 #-java bin/java
 #-dce no
--js bin/js/test.js
+#-js bin/js/test.js
+-cpp bin/cpp
+-lib unifill
 -cp src
 -main Main
