@@ -21,4 +21,21 @@ class StringUtil {
 		return ret;
 	}
 
+	public static function decode(str : String) : String {
+		var ret = "";
+		for (i in 0...str.uLength()) {
+			var c = str.uCharAt(i);
+			ret += switch (c) {
+				case "0": "á";
+				case "1": "é";
+				case "2": "í";
+				case "3": "ó";
+				case "4": "ú";
+				case "5": "ñ";
+				default: c;
+			}
+		}
+		return ret;
+	}
+
 }
