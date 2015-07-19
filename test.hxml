@@ -6,4 +6,4 @@
 #-cpp bin/cpp
 -lib unifill
 -cp src
--main Main
+-main Test
