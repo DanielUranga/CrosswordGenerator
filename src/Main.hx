@@ -9,8 +9,7 @@ using Lambda;
 class Main {
 
 	static function main() {
-		
-		trace(StringUtil.encode("ábadia ñandú"));
+
 		var testWords = [
 			"ñandu",
 			"kiko",
