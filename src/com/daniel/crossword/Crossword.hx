@@ -94,7 +94,6 @@ class Crossword {
 		}
 		var wordPos = wordPos.copy();
 
-		var word = "";
 		var normal = DirectionUtil.getDelta(wordPos.dir);
 		var reverse = DirectionUtil.getRotated180Delta(wordPos.dir);
 		while (get(wordPos.x+reverse.x, wordPos.y+reverse.y)!=emptyVal) {
@@ -103,14 +102,19 @@ class Crossword {
 		}
 		// Now wordPos is at start of word
 		var c : Char;
+		var word = "";
+		dict.startHas();
 		while ((c = get(wordPos.x, wordPos.y))!=emptyVal) {
-			word += c;
+			if (!dict.moveHas(c)) {
+				return false;
+			}
 			wordPos.x+=normal.x;
 			wordPos.y+=normal.y;
+			word += c;
 		}
 
 		// finaly check if "word" is in "dict" and return
-		return dict.has(word);
+		return dict.finishHas();
 	}
 
 	public function putWordScore(pos : WordPosition, word : String, remainingWords : StringSet) : Int {

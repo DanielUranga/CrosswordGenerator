@@ -6,10 +6,12 @@ private class StringSetNode {
 
 	public var child : Map<Char, StringSetNode>;
 	public var count : Int;
+	public var isWordEnd : Bool;
 
 	public function new() {
 		this.child = new Map<Char, StringSetNode>();
 		this.count = 0;
+		this.isWordEnd = true;
 	}
 
 	public inline function get(c : Char) {
@@ -29,6 +31,7 @@ private class StringSetNode {
 class StringSet {
 
 	var root : StringSetNode;
+	var hasIter : StringSetNode;
 
 	public function new() {
 		root = new StringSetNode();
@@ -44,8 +47,28 @@ class StringSet {
 			itr.count++;
 			itr = itr.get(c);
 		}
+		itr.isWordEnd = true;
 	}
 
+	public function startHas() {
+		hasIter = root;
+	}
+
+	public function moveHas(c : Char) : Bool {
+		if (hasIter==null || hasIter.count<=0) {
+			return false;
+		}
+		hasIter = hasIter.get(c);
+		if (hasIter==null || hasIter.count<=0) {
+			return false;
+		}
+		return true;
+	}
+
+	public function finishHas() : Bool {
+		return hasIter.isWordEnd;
+	}
+/*
 	public function has(s : String) : Bool {
 		var itr = root;
 		for (i in 0...s.length) {
@@ -57,7 +80,7 @@ class StringSet {
 		}
 		return true;
 	}
-
+*/
 	public function remove(s : String) : Void {
 		var itr = root;
 		var parent : StringSetNode = null;
