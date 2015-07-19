@@ -105,9 +105,7 @@ class Crossword {
 		var word = "";
 		dict.startHas();
 		while ((c = get(wordPos.x, wordPos.y))!=emptyVal) {
-			if (!dict.moveHas(c)) {
-				return false;
-			}
+			dict.moveHas(c);
 			wordPos.x+=normal.x;
 			wordPos.y+=normal.y;
 			word += c;
