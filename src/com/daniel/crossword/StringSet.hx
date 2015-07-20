@@ -1,6 +1,7 @@
 package com.daniel.crossword;
 
 import com.daniel.crossword.Char;
+import sys.io.File;
 
 private class StringSetNode {
 
@@ -105,9 +106,13 @@ class StringSet {
 	public static function fromArray(words : Array<String>) {
 		var s = new StringSet();
 		for (w in words) {
-			s.put(w);
+			s.put(StringUtil.encode(w));
 		}
 		return s;
+	}
+
+	public static function fromUncompressedFile(path : String) {
+		return fromArray(File.getContent(path).split("\n"));
 	}
 
 }
