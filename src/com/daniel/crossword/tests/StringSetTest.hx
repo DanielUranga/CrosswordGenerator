@@ -4,14 +4,17 @@ import com.daniel.crossword.Char;
 import com.daniel.crossword.StringSet;
 import haxe.unit.TestCase;
 
+@:access(com.daniel.crossword.StringSet)
 class StringSetTest extends TestCase {
 
 	public function test() {
-		var set = new StringSet();
 
+		var set = new StringSet();
+		set.put("papanatas");
 		set.put("sincronario");
 		set.put("patata");
 		set.put("papa");
+		set.remove("papanatas");
 
 		assertFalse(set.has("pa"));
 		assertFalse(set.has("pap"));
@@ -39,6 +42,8 @@ class StringSetTest extends TestCase {
 			found = set.finishHas();
 			assertTrue(found);
 		}
+
+		assertEquals(set.root.wordCount, set.root.updateWordCount());
 
 	}
 
