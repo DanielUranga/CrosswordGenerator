@@ -7,6 +7,7 @@ class Test {
 		var r = new TestRunner();
 		r.add(new StringSetTest());
 		r.add(new StringSetSerializationTest());
+		r.add(new BitsTest());
 		r.run();
 	}
 	
