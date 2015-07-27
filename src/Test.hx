@@ -8,6 +8,7 @@ class Test {
 		r.add(new StringSetTest());
 		r.add(new StringSetSerializationTest());
 		r.add(new BitsTest());
+		r.add(new CharIterTest());
 		r.run();
 	}
 	

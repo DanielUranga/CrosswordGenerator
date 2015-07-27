@@ -9,6 +9,22 @@ import haxe.zip.Compress;
 import haxe.zip.Uncompress;
 import sys.io.File;
 
+private class SortedKeys {
+
+	static var _sortedKeys : Array<Char>;
+
+	public static function k() : Array<Char> {
+		if (_sortedKeys==null) {
+			_sortedKeys = [];
+			for (c in Char.firstChar...Char.lastChar+1) {
+				_sortedKeys.push(c);
+			}
+		}
+		return _sortedKeys;
+	}
+
+}
+
 private class StringSetNode {
 
 	public var child : Map<Char, StringSetNode>;
@@ -69,14 +85,11 @@ private class StringSetNode {
 		if (thisNodeCharCount<=16) {
 		*/
 			// Less or equals 16 chars, add them one by one
-			var keys = [];
-			for (k in child.keys()) {
-				keys.push(k);
-			}
-			keys.sort(function(x, y) return x-y);
-			for (k in keys) {
+			for (k in SortedKeys.k()) {
 				// Add char
-				bytes.writeByte(k);
+				if (child.exists(k)) {
+					bytes.writeByte(k);
+				}
 			}
 		/*
 		} else {
@@ -205,13 +218,10 @@ class StringSet {
 
 	static function _compress(rootNode : StringSetNode, bytes : BytesOutput) {
 		rootNode.appendToBytes(bytes);
-		var keys = [];
-		for (k in rootNode.child.keys()) {
-			keys.push(k);
-		}
-		keys.sort(function(x, y) return x-y);
-		for (k in keys) {
-			_compress(rootNode.child[k], bytes);
+		for (k in SortedKeys.k()) {
+			if (rootNode.child.exists(k)) {
+				_compress(rootNode.child[k], bytes);
+			}
 		}
 	}
 
@@ -223,16 +233,13 @@ class StringSet {
 
 	static function _fromCompressed(bytes : BytesInput) : StringSetNode {
 		var rootNode = StringSetNode.fromBytes(bytes);
-		var keys = [];
-		for (k in rootNode.child.keys()) {
-			keys.push(k);
-		}
-		keys.sort(function(x, y) return x-y);
-		for (k in keys) {
-			rootNode.child.set(k, _fromCompressed(bytes));
+		for (k in SortedKeys.k()) {
+			if (rootNode.child.exists(k)) {
+				rootNode.child.set(k, _fromCompressed(bytes));
+			}
 		}
 		return rootNode;
-	}	
+	}
 
 	public static function fromCompressed(bytes : Bytes) : StringSet {
 		var ret = new StringSet();
