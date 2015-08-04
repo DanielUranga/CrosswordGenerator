@@ -25,17 +25,21 @@ private class SortedKeys {
 
 }
 
-private class StringSetNode {
+class StringSetNode {
 
 	public var child : Map<Char, StringSetNode>;
 	public var wordCount : Int;
 	public var isWordEnd : Bool;
+	public var parent : StringSetNode;
+	public var char : Char;
 
 	static inline var isWordEndFlag = 0x80;
 
-	public function new() {
+	public function new(parent : StringSetNode, char : Char) {
 		this.child = new Map<Char, StringSetNode>();
 		this.isWordEnd = false;
+		this.parent = parent;
+		this.char = char;
 	}
 
 	public inline function get(c : Char) {
@@ -48,6 +52,15 @@ private class StringSetNode {
 
 	public inline function remove(c : Char) {
 		return child.remove(c);
+	}
+
+	public static function updateReferences(node : StringSetNode, parent : StringSetNode, char : Char) {
+		node.parent = parent;
+		node.char = char;
+		for (k in node.child.keys()) {
+			var n = node.child.get(k);
+			updateReferences(n, node, k);
+		}
 	}
 
 	public function updateWordCount() : Int {
@@ -109,7 +122,7 @@ private class StringSetNode {
 	}
 
 	public static function fromBytes(bytes : BytesInput) : StringSetNode {
-		var newNode = new StringSetNode();
+		var newNode = new StringSetNode(null, "*");
 		var thisNodeCharCount = bytes.readByte();
 		newNode.isWordEnd = (thisNodeCharCount&isWordEndFlag)!=0;
 		thisNodeCharCount &= ~isWordEndFlag;
@@ -118,7 +131,8 @@ private class StringSetNode {
 		*/
 			// Less or equals 16 chars, read them one by one
 			for (i in 0...thisNodeCharCount) {
-				newNode.child[bytes.readByte()] = new StringSetNode();
+				var c = bytes.readByte();
+				newNode.child[c] = new StringSetNode(newNode, c);
 			}
 		/*
 		} else {
@@ -142,9 +156,10 @@ class StringSet {
 
 	var root : StringSetNode;
 	var hasIter : StringSetNode;
+	var filterIter : Array<StringSetNode>;
 
 	public function new() {
-		root = new StringSetNode();
+		root = new StringSetNode(null, "*");
 	}
 
 	public function put(s : String) : Void {
@@ -152,7 +167,7 @@ class StringSet {
 		for (i in 0...s.length) {
 			var c : Char = s.charAt(i);
 			if (itr.get(c)==null) {
-				itr.set(c, new StringSetNode());
+				itr.set(c, new StringSetNode(itr, c));
 			}
 			itr.wordCount++;
 			itr = itr.get(c);
@@ -165,6 +180,7 @@ class StringSet {
 		return root.nodeCount();
 	}
 
+	// <Has>
 	public function startHas() {
 		hasIter = root;
 	}
@@ -182,6 +198,48 @@ class StringSet {
 		}
 		return hasIter.isWordEnd;
 	}
+	// </Has>
+
+	// <Filter>
+	public function startFilter() : Void {
+		filterIter = [root];
+	}
+
+	public function moveFilter(c : Char) : Void {
+		var prev = filterIter.copy();
+		filterIter = [];
+		if (c=="*") {
+			for (p in prev) {
+				for (sub in p.child) {
+					filterIter.push(sub);
+				}
+			}
+		} else {
+			for (p in prev) {
+				if (p.child.exists(c)) {
+					filterIter.push(p.child.get(c));
+				}
+			}
+		}
+	}
+
+	public function finishFilter() : List<String> {		
+		var ret = new List<String>();
+		for (node in filterIter) {
+			if (!node.isWordEnd) {
+				continue;
+			}
+			var str = "";
+			var itr = node;
+			do {
+				str = cast(itr.char, Char).toString() + str;
+				itr = itr.parent;
+			} while (itr!=null && itr!=root);
+			ret.add(str);
+		}
+		return ret;
+	}
+	// </Filter>
 
 	public function has(s : String) : Bool {
 		var itr = root;
@@ -246,6 +304,7 @@ class StringSet {
 		var uBytes = Uncompress.run(bytes);
 		ret.root = _fromCompressed(new BytesInput(uBytes));
 		ret.root.updateWordCount();
+		StringSetNode.updateReferences(ret.root, null, "*");
 		return ret;
 	}
 

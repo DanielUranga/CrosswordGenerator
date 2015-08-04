@@ -7,6 +7,22 @@ import haxe.unit.TestCase;
 @:access(com.daniel.crossword.StringSet)
 class StringSetTest extends TestCase {
 
+	function structureIsValid(node : StringSetNode, parent : StringSetNode, char : Char) : Bool {
+		if (node.parent!=parent) {
+			return false;
+		}
+		if (char!="*".code && char!=node.char) {
+			return false;
+		}
+		for (k in node.child.keys()) {
+			var c = node.child.get(k);
+			if (!structureIsValid(c, node, k)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public function test() {
 
 		var set = new StringSet();
@@ -44,6 +60,8 @@ class StringSetTest extends TestCase {
 		}
 
 		assertEquals(set.root.wordCount, set.root.updateWordCount());
+
+		assertTrue(structureIsValid(set.root, null, "*"));
 
 	}
 

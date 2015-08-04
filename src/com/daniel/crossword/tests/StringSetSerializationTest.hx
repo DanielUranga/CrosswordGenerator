@@ -9,6 +9,24 @@ import sys.io.File;
 @:access(com.daniel.crossword.StringSet)
 class StringSetSerializationTest extends TestCase {
 
+	function structureIsValid(node : StringSetNode, parent : StringSetNode, char : Char) : Bool {
+		if (node.parent!=parent) {
+			throw("node.parent!=parent");
+			return false;
+		}
+		if (char!="*".code && char!=node.char) {
+			throw("char!=node.char");
+			return false;
+		}
+		for (k in node.child.keys()) {
+			var c = node.child.get(k);
+			if (!structureIsValid(c, node, k)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public function testFromUncompressedFile() {
 		var s = StringSet.fromUncompressedFile("src/com/daniel/crossword/dict/ES.dic");
 		assertTrue(s.has("cope"));
@@ -24,9 +42,24 @@ class StringSetSerializationTest extends TestCase {
 		assertTrue(sUncompressed.has("hispanoamericanos"));
 		assertTrue(sUncompressed.has(StringUtil.encode("industrializarías")));
 		assertFalse(sUncompressed.has("abcdefg"));
+		assertTrue(structureIsValid(sUncompressed.root, null, "*"));
+		
 		for (i in 0...3) {
 			assertEquals(prevNums[i], postNums[i]);
 		}
+		sUncompressed.startFilter();
+		sUncompressed.moveFilter("*");
+		sUncompressed.moveFilter("a");
+		sUncompressed.moveFilter("*");
+		sUncompressed.moveFilter("l");
+		sUncompressed.moveFilter("*");
+		var filtered = sUncompressed.finishFilter();
+		for (f in filtered) {
+			assertTrue(f.charAt(1)=="a");
+			assertTrue(f.charAt(3)=="l");
+		}
+
+
 	}
 
 	public function testCompression() {
