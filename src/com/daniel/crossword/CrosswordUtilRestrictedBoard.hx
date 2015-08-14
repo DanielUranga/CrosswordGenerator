@@ -62,20 +62,26 @@ class CrosswordUtilRestrictedBoard {
 			}
 		}
 
-		possiblePos = possiblePos.filter(function(e) return e.intersections==minIntersections).array();
-		starPos = possiblePos[Std.random(possiblePos.length)].pos;
+		var possibleWords = [];
+		var tries = 0;
+		do {
+			possiblePos = possiblePos.filter(function(e) return e.intersections==minIntersections).array();
+			var possible = possiblePos[Std.random(possiblePos.length)];
+			possiblePos.remove(possible);
+			starPos = possible.pos;
 
-		var iter = starPos.copy();
-		var delta = DirectionUtil.getDelta(iter.dir);
-		dict.startFilter();
-		for (i in 0...wordLen) {
-			var c = crossword.get(iter.x, iter.y);
-			dict.moveFilter(c!=Crossword.emptyVal ? c : "*");
-			iter.x+=delta.x;
-			iter.y+=delta.y;
-		}
-
-		var possibleWords = dict.finishFilter();
+			var iter = starPos.copy();
+			var delta = DirectionUtil.getDelta(iter.dir);
+			dict.startFilter();
+			for (i in 0...wordLen) {
+				var c = crossword.get(iter.x, iter.y);
+				dict.moveFilter(c!=Crossword.emptyVal ? c : "*");
+				iter.x+=delta.x;
+				iter.y+=delta.y;
+			}
+			possibleWords = dict.finishFilter();
+			tries++;
+		} while (possibleWords.length==0 && possiblePos.length>0);
 		while (possibleWords.length>0) {
 			var idx = Std.random(possibleWords.length);
 			var word = possibleWords[idx];

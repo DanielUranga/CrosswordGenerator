@@ -12,14 +12,18 @@ class CrosswordTest extends TestCase {
 		var iterationsWithouthAdding = 0;
 		var total = 0;
 		while (iterationsWithouthAdding<50) {
-			if (CrosswordUtilRestrictedBoard.tryAddRandomWord(c, 15, 15, d, Std.random(7)+3)) {
+			var randomFactor = 10;
+			randomFactor -= Std.int(iterationsWithouthAdding/4);
+			if (randomFactor<0) {
+				randomFactor = 0;
+			}
+			if (CrosswordUtilRestrictedBoard.tryAddRandomWord(c, 15, 15, d, Std.random(randomFactor)+3)) {
 				iterationsWithouthAdding = 0;
 			} else {
 				iterationsWithouthAdding++;
 			}
 			total++;
 		}
-		trace("Total: " + total);
 		trace(c.toString());
 	}
 
