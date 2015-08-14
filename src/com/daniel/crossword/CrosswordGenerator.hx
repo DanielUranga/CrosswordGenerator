@@ -22,7 +22,7 @@ class CrosswordGenerator {
 		var currentBest = new Crossword();
 		var s = StringSet.fromArray(sortedWords);
 		for (w in sortedWords) {
-			var arr = currentBest.getWordPositionsScores(w, s);
+			var arr = CrosswordUtilInfiniteBoard.getWordPositionsScores(currentBest, w, s);
 			var best = arr[0];
 			for (a in arr) {
 				if (a.score>best.score) {
@@ -38,7 +38,7 @@ class CrosswordGenerator {
 			shuffle(sortedWords);
 			var s = StringSet.fromArray(sortedWords);
 			for (w in sortedWords) {
-				var wordPos : Array<WordPositionScore> = crossword.getWordPositionsScores(w, s);
+				var wordPos = CrosswordUtilInfiniteBoard.getWordPositionsScores(crossword, w, s);
 				var filteredWordPos = [];
 				Lambda.iter(wordPos, function(w) if (w.score>=100) filteredWordPos.push(w));
 				if (filteredWordPos.length==0) {
@@ -56,6 +56,22 @@ class CrosswordGenerator {
 		return currentBest;
 
 	}
+/*
+	public static addRandomWord(crossword : Crossword, dict : StringSet, width : Int, height : Int) {
+		var minX = crossword.minX;
+		var maxX = crossword.minX + width;
+		var minY = crossword.minY;
+		var maxY = crossword.minY + width;
+		var maxWordLength = Std.int(Math.max(maxX-minX, maxY-minY));
 
+
+
+	}
+*/
+/*
+	public static function genWithSize(dict : StringSet, width : Int, height : Int) : Crossword {
+
+	}
+*/
 
 }

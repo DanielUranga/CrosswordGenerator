@@ -23,7 +23,7 @@ abstract Char(Int) from Int to Int {
 	static var toStringTable = [
 		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 		"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x",
-		"y", "z", "0", "1", "2", "3", "4", "5", "*"
+		"y", "z", "0", "1", "2", "3", "4", "5", "*", "_"
 	];
 
 	static var fromStringTable = [
@@ -31,7 +31,7 @@ abstract Char(Int) from Int to Int {
 		"i"=>8, "j"=>9, "k"=>10, "l"=>11,	"m"=>12, "n"=>13, "o"=>14, "p"=>15,
 		"q"=>16, "r"=>17, "s"=>18, "t"=>19, "u"=>20, "v"=>21, "w"=>22, "x"=>23,
 		"y"=>24, "z"=>25, "0"=>26, "1"=>27, "2"=>28, "3"=>29, "4"=>30, "5"=>31,
-		"*"=>32
+		"*"=>32, "_"=>33
 	];
 
 	public static inline var firstChar : Char = 0;

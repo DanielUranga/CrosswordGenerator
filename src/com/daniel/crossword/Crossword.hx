@@ -2,39 +2,19 @@ package com.daniel.crossword;
 
 import com.daniel.crossword.Direction;
 import com.daniel.crossword.StringSet;
-import haxe.ds.Option;
 
-typedef WordPositionScore = {pos:WordPosition, score:Int};
 typedef Column = Map<Int, Char>;	// Cell id (Y) -> Cell
 typedef Board = Map<Int, Column>;	// Row id (X) -> Column
 
-class WordPosition {
-
-	public var x : Int;
-	public var y : Int;
-	public var dir : Direction;
-
-	public function new(x : Int, y : Int, dir : Direction) {
-		this.x = x;
-		this.y = y;
-		this.dir = dir;
-	}
-
-	public function copy() {
-		return new WordPosition(x, y, dir);
-	}
-
-}
-
 class Crossword {
 
-	static var emptyVal : Char = "_";
+	public static var emptyVal : Char = "_";
 
 	var board : Board;
-	var minX : Int;
-	var minY : Int;
-	var maxX : Int;
-	var maxY : Int;
+	public var minX(default, null) : Int;
+	public var minY(default, null) : Int;
+	public var maxX(default, null) : Int;
+	public var maxY(default, null) : Int;
 
 	public function new() {
 
@@ -86,7 +66,7 @@ class Crossword {
 
 	}
 
-	// Checks if word that has a letter in "wordPos" is in the set "dict"
+	// Checks if word that crosses over "wordPos" is in the set "dict"
 	public function checkWordIsInSet(wordPos : WordPosition, dict : StringSet) : Bool {
 
 		if (get(wordPos.x, wordPos.y)==emptyVal) {
@@ -102,20 +82,18 @@ class Crossword {
 		}
 		// Now wordPos is at start of word
 		var c : Char;
-		var word = "";
 		dict.startHas();
 		while ((c = get(wordPos.x, wordPos.y))!=emptyVal) {
 			dict.moveHas(c);
 			wordPos.x+=normal.x;
 			wordPos.y+=normal.y;
-			word += c;
 		}
 
 		// finaly check if "word" is in "dict" and return
 		return dict.finishHas();
 	}
 
-	public function putWordScore(pos : WordPosition, word : String, remainingWords : StringSet) : Int {
+	public function putWordScore(pos : WordPosition, word : String, dict : StringSet) : Int {
 
 		var pos = pos.copy();
 		var score = 100;
@@ -128,11 +106,6 @@ class Crossword {
 		var delta270 = DirectionUtil.getRotated270Delta(pos.dir);
 
 		for (i in 0...word.length) {
-			// Score-- for each letter outside the current board
-			if (pos.x<minX || pos.x>maxX || pos.y<minY || pos.y>maxY) {
-				score--;
-			}
-
 			var wordC = word.charAt(i);
 			var boardC = get(pos.x, pos.y);
 			if (boardC!=emptyVal) {
@@ -144,7 +117,7 @@ class Crossword {
 			} else if (get(pos.x+delta90.x, pos.y+delta90.y)!=emptyVal || get(pos.x+delta270.x, pos.y+delta270.y)!=emptyVal) {
 				pos.dir = pos.dir==S ? E : S;	// Rotate dir
 				set(pos.x, pos.y, wordC);		// Set char in board
-				var found = checkWordIsInSet(pos, remainingWords);
+				var found = checkWordIsInSet(pos, dict);
 				pos.dir = pos.dir==S ? E : S;	// Restore dir
 				set(pos.x, pos.y, emptyVal);	// Unset char
 				if (found) {
@@ -161,30 +134,6 @@ class Crossword {
 		}
 		return score;
 
-	}
-
-	public function getWordPositionsScores(word : String, remainingWords : StringSet) : Array<WordPositionScore> {
-		var ret = [];
-		var x = 0;
-		var y = 0;
-		var wPos = new WordPosition(0, 0, S);
-		for (dir in [S, E]) {
-			for (y in minY-word.length-1...maxY+1) {
-				for (x in minX-word.length-1...maxX+1) {
-					if ((x<minX && dir==S) || (y<minY && dir==E)) {
-						continue;
-					}
-					wPos.x = x;
-					wPos.y = y;
-					wPos.dir = dir;
-					var score = putWordScore(wPos, word, remainingWords);
-					if (score>=0) {
-						ret.push({pos : wPos.copy(), score : score});
-					}
-				}
-			}
-		}
-		return ret;
 	}
 
 	public function putWord(pos : WordPosition, word : String) {
@@ -240,9 +189,9 @@ class Crossword {
 				var cell = get(x, y);
 				if (cell!=emptyVal) {
 					#if js
-					ret+='$cell';
+					ret+='${cell.toString()}';
 					#else
-					ret+='$cell, ';
+					ret+='${cell.toString()}, ';
 					#end
 				} else {
 					#if !js

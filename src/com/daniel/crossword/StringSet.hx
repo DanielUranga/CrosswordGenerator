@@ -223,8 +223,8 @@ class StringSet {
 		}
 	}
 
-	public function finishFilter() : List<String> {		
-		var ret = new List<String>();
+	public function finishFilter() : Array<String> {		
+		var ret = new Array<String>();
 		for (node in filterIter) {
 			if (!node.isWordEnd) {
 				continue;
@@ -235,7 +235,7 @@ class StringSet {
 				str = cast(itr.char, Char).toString() + str;
 				itr = itr.parent;
 			} while (itr!=null && itr!=root);
-			ret.add(str);
+			ret.push(str);
 		}
 		return ret;
 	}
@@ -306,6 +306,10 @@ class StringSet {
 		ret.root.updateWordCount();
 		StringSetNode.updateReferences(ret.root, null, "*");
 		return ret;
+	}
+
+	public static function fromCompressedFile(path : String) : StringSet {
+		return fromCompressed(File.getBytes(path));
 	}
 
 	public static function fromArray(words : Array<String>) {
