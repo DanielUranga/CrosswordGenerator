@@ -157,9 +157,22 @@ class StringSet {
 	var root : StringSetNode;
 	var hasIter : StringSetNode;
 	var filterIter : Array<StringSetNode>;
+	var filtersCache : Map<String, Array<StringSetNode>>;
 
 	public function new() {
 		root = new StringSetNode(null, "*");
+		filtersCache = new Map<String, Array<StringSetNode>>();
+	}
+
+	function updateFiltersCache() {
+		var str = "";
+		startFilter();
+		for (i in 0...10) {
+			str += "*";
+			moveFilter("*");
+			filtersCache.set(str, filterIter.copy());
+		}
+		finishFilter();
 	}
 
 	public function put(s : String) : Void {
@@ -201,11 +214,18 @@ class StringSet {
 	// </Has>
 
 	// <Filter>
+	var filterWord : String;
 	public function startFilter() : Void {
+		filterWord = "";
 		filterIter = [root];
 	}
 
 	public function moveFilter(c : Char) : Void {
+		filterWord += c.toString();
+		if (filtersCache.exists(filterWord)) {
+			filterIter = filtersCache.get(filterWord);
+			return;
+		}
 		var prev = filterIter.copy();
 		filterIter = [];
 		if (c=="*") {
@@ -223,7 +243,7 @@ class StringSet {
 		}
 	}
 
-	public function finishFilter() : Array<String> {		
+	public function finishFilter() : Array<String> {
 		var ret = new Array<String>();
 		for (node in filterIter) {
 			if (!node.isWordEnd) {
@@ -305,6 +325,7 @@ class StringSet {
 		ret.root = _fromCompressed(new BytesInput(uBytes));
 		ret.root.updateWordCount();
 		StringSetNode.updateReferences(ret.root, null, "*");
+		ret.updateFiltersCache();
 		return ret;
 	}
 
@@ -317,6 +338,7 @@ class StringSet {
 		for (w in words) {
 			s.put(StringUtil.encode(w));
 		}
+		s.updateFiltersCache();
 		return s;
 	}
 
