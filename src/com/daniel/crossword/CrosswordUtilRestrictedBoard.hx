@@ -56,9 +56,9 @@ class CrosswordUtilRestrictedBoard {
 		var minIntersections = 999;
 		for (p in possiblePos) {
 			var current = wordIntersections(crossword, p.pos, wordLen);
-			p.intersections = current;
-			if (current<minIntersections) {
-				minIntersections = current;
+			p.intersections = Std.int(Math.abs(1-current));
+			if (Std.int(Math.abs(1-current))<minIntersections) {
+				minIntersections = Std.int(Math.abs(1-current));
 			}
 		}
 

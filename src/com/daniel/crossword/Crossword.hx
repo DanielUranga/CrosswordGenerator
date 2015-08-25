@@ -191,11 +191,11 @@ class Crossword {
 					#if js
 					ret+='${cell.toString()}';
 					#else
-					ret+='${cell.toString()}, ';
+					ret+='${cell.toString()} ';
 					#end
 				} else {
 					#if !js
-					ret+='_, ';
+					ret+='  ';
 					#end
 				}
 				#if js
@@ -212,6 +212,22 @@ class Crossword {
 		#if js
 		ret+="</table>";
 		#end
+		return ret;
+	}
+
+	public function toSerializedFormat() {
+		var ret = "";
+		for (y in minY...maxY+1) {
+			for (x in minX...maxX+1) {
+				var cell = get(x, y);
+				if (cell!=emptyVal) {
+					ret += cell.toString();
+				} else {
+					ret += " ";
+				}
+			}
+			ret += "*";
+		}
 		return ret;
 	}
 

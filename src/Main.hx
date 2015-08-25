@@ -1,5 +1,5 @@
 import com.daniel.crossword.Crossword;
-import com.daniel.crossword.CrosswordGenerator;
+import com.daniel.crossword.CrosswordUtilRestrictedBoard;
 import com.daniel.crossword.Direction;
 import com.daniel.crossword.StringSet;
 import com.daniel.crossword.StringUtil;
@@ -27,8 +27,15 @@ class Main {
 			"expresso"
 		];
 		testWords = testWords.map(function(str) return StringUtil.encode(str)).array();
+		var set = new StringSet();
+		for (w in testWords) {
+			set.put(w);
+		}
 
-		var crossword = CrosswordGenerator.genCrossword(testWords, 10);
+		var crossword = new Crossword();
+		for (i in 0...50) {
+			CrosswordUtilRestrictedBoard.tryAddRandomWord(crossword, 12, 12, set, Std.random(8)+3);
+		}
 		crossword.printCrossword();
 
 	}

@@ -9,12 +9,12 @@ class StringUtil {
 
 		for (c in str.uIterator()) {
 			ret += switch (c.toString()) {
-				case "á": "0";
-				case "é": "1";
-				case "í": "2";
-				case "ó": "3";
-				case "ú": "4";
-				case "ñ": "5";
+				case "á": "a";
+				case "é": "e";
+				case "í": "i";
+				case "ó": "o";
+				case "ú": "u";
+				//case "ñ": "5";
 				default: c.toString().toLowerCase();
 			}
 		}

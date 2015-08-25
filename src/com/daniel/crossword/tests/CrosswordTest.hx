@@ -7,24 +7,26 @@ import com.daniel.crossword.CrosswordUtilRestrictedBoard;
 class CrosswordTest extends TestCase {
 
 	public function test() {
-		var c = new Crossword();
 		var d = StringSet.fromCompressedFile("src/com/daniel/crossword/dict/ES.compressed");
-		var iterationsWithouthAdding = 0;
-		var total = 0;
-		while (iterationsWithouthAdding<50) {
-			var randomFactor = 10;
-			randomFactor -= Std.int(iterationsWithouthAdding/4);
-			if (randomFactor<0) {
-				randomFactor = 0;
+		for (i in 0...15) {
+			var c = new Crossword();
+			var iterationsWithouthAdding = 0;
+			var total = 0;
+			while (iterationsWithouthAdding<50) {
+				var randomFactor = 10;
+				randomFactor -= Std.int(iterationsWithouthAdding/4);
+				if (randomFactor<0) {
+					randomFactor = 0;
+				}
+				if (CrosswordUtilRestrictedBoard.tryAddRandomWord(c, 12, 14, d, Std.random(randomFactor)+3)) {
+					iterationsWithouthAdding = 0;
+				} else {
+					iterationsWithouthAdding++;
+				}
+				total++;
 			}
-			if (CrosswordUtilRestrictedBoard.tryAddRandomWord(c, 15, 15, d, Std.random(randomFactor)+3)) {
-				iterationsWithouthAdding = 0;
-			} else {
-				iterationsWithouthAdding++;
-			}
-			total++;
+			Sys.println(c.toSerializedFormat());
 		}
-		trace(c.toString());
 	}
 
 }
