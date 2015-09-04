@@ -34,35 +34,37 @@ abstract Direction(Int) from Int to Int {
 
 class DirectionUtil {
 
-	public static inline function crossowrdDirs() : Array<Direction> return [S, E];
+	static var deltaArr : Array<IntPair> = null;
 
-	static inline function deltaArr() : Array<{x : Int, y : Int}> {
-		return [
-			{ x : 0, y : -1 },
-			{ x : 1, y : -1 },
-			{ x : 1, y : 0 },
-			{ x : 1, y : 1 },
-			{ x : 0, y : 1 },
-			{ x : -1, y : -1 },
-			{ x : -1, y : 0 },
-			{ x : -1, y : -1 }
+	public static function init() {
+		deltaArr = [
+			new IntPair(0, -1),
+			new IntPair(1, -1),
+			new IntPair(1, 0),
+			new IntPair(1, 1),
+			new IntPair(0, 1),
+			new IntPair(-1, -1),
+			new IntPair(-1, 0),
+			new IntPair(-1, -1)
 		];
 	}
 
-	public static inline function getDelta(dir : Direction) : { x : Int, y : Int } {
-	    return deltaArr()[dir];
+	public static inline function crossowrdDirs() : Array<Direction> return [S, E];
+
+	public static inline function getDelta(dir : Direction) : IntPair {
+	    return deltaArr[dir];
 	}
 
 	public static inline function getRotated90Delta(dir : Direction) {
-		return deltaArr()[(cast(dir, Int)+2)%8];
+		return deltaArr[(cast(dir, Int)+2)%8];
 	}
 
 	public static inline function getRotated180Delta(dir : Direction) {
-		return deltaArr()[(cast(dir, Int)+4)%8];
+		return deltaArr[(cast(dir, Int)+4)%8];
 	}
 
 	public static inline function getRotated270Delta(dir : Direction) {
-		return deltaArr()[(cast(dir, Int)+6)%8];
+		return deltaArr[(cast(dir, Int)+6)%8];
 	}
 
 }

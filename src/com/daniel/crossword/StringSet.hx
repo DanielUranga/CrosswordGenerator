@@ -230,8 +230,8 @@ class StringSet {
 		filterIter = [];
 		if (c=="*") {
 			for (p in prev) {
-				for (sub in p.child) {
-					filterIter.push(sub);
+				for (k in p.child.keys()) {
+					filterIter.push(p.child.get(k));
 				}
 			}
 		} else {

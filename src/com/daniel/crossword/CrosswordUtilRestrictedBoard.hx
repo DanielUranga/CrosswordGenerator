@@ -1,6 +1,7 @@
 package com.daniel.crossword;
 
 import com.daniel.crossword.Direction;
+import com.daniel.crossword.Telemetry;
 
 using Lambda;
 
@@ -93,6 +94,26 @@ class CrosswordUtilRestrictedBoard {
 			}
 		}
 		return false;
+	}
+
+	public static function fillCrossword(boardWidth : Int, boardHeight : Int, dict : StringSet) : Crossword {
+		DirectionUtil.init();
+		var crossword = new Crossword();
+		var iterationsWithouthAdding = 0;
+		while (iterationsWithouthAdding<50) {
+
+			#if telemetry
+			Telemetry.getInstance().update();
+			#end
+			
+			if (CrosswordUtilRestrictedBoard.tryAddRandomWord(crossword, boardWidth, boardHeight, dict, Std.random(10)+3)) {
+				iterationsWithouthAdding = 0;
+			} else {
+				iterationsWithouthAdding++;
+			}
+
+		}
+		return crossword;
 	}
 
 }

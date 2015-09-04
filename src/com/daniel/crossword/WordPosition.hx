@@ -6,7 +6,7 @@ class WordPosition {
 	public var y : Int;
 	public var dir : Direction;
 
-	public function new(x : Int, y : Int, dir : Direction) {
+	public inline function new(x : Int, y : Int, dir : Direction) {
 		this.x = x;
 		this.y = y;
 		this.dir = dir;
