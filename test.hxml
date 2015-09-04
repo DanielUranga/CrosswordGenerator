@@ -5,5 +5,9 @@
 #-js bin/js/test.js
 -cpp bin/cpp
 -lib unifill
+-lib hxtelemetry
 -cp src
 -main Test
+-D HXCPP_STACK_TRACE
+-D HXCPP_TELEMETRY
+-D telemetry
