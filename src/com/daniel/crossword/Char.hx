@@ -35,7 +35,7 @@ abstract Char(Int) from Int to Int {
 	];
 
 	public static inline var firstChar : Char = 0;
-	public static inline var lastChar : Char = 32;
+	public static inline var lastChar : Char = 33;
 
 	inline public function new(i:Int) {
 		this = i;

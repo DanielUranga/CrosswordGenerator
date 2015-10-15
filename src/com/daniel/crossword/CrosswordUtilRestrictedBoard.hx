@@ -90,23 +90,36 @@ class CrosswordUtilRestrictedBoard {
 			possibleWords.pop();
 			if (crossword.putWordScore(starPos, word, dict)>0) {
 				crossword.putWord(starPos, word);
+				Sys.println(" - " + word);
 				return true;
 			}
 		}
 		return false;
 	}
 
+	static function nextTryWordLen(iterationsWithouthAdding : Int, maxIterationsWithoutAdding : Int, maxWordLen : Int) {
+		var p = 1 - iterationsWithouthAdding / maxIterationsWithoutAdding;
+		var r = Std.int(p*(maxWordLen-3));
+		return Std.random(r) + 3;
+	}
+
 	public static function fillCrossword(boardWidth : Int, boardHeight : Int, dict : StringSet) : Crossword {
-		DirectionUtil.init();
 		var crossword = new Crossword();
 		var iterationsWithouthAdding = 0;
-		while (iterationsWithouthAdding<50) {
+		var maxIterationsWithoutAdding = 50;
+		var maxWordLen = Std.int(Math.max(boardWidth, boardHeight));
+		while (iterationsWithouthAdding<maxIterationsWithoutAdding) {
 
 			#if telemetry
 			Telemetry.getInstance().update();
 			#end
 			
-			if (CrosswordUtilRestrictedBoard.tryAddRandomWord(crossword, boardWidth, boardHeight, dict, Std.random(10)+3)) {
+			if (CrosswordUtilRestrictedBoard.tryAddRandomWord(
+					crossword,
+					boardWidth,
+					boardHeight,
+					dict,
+					nextTryWordLen(iterationsWithouthAdding, maxIterationsWithoutAdding, maxWordLen))) {
 				iterationsWithouthAdding = 0;
 			} else {
 				iterationsWithouthAdding++;

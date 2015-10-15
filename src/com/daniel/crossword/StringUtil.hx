@@ -5,6 +5,7 @@ using unifill.Unifill;
 class StringUtil {
 
 	public static function encode(str : String) : String {
+
 		var ret = "";
 
 		for (c in str.uIterator()) {
@@ -14,7 +15,7 @@ class StringUtil {
 				case "í": "i";
 				case "ó": "o";
 				case "ú": "u";
-				//case "ñ": "5";
+				case "ñ": "5";
 				default: c.toString().toLowerCase();
 			}
 		}
@@ -25,14 +26,16 @@ class StringUtil {
 	}
 
 	public static function decode(str : String) : String {
+
 		var ret = "";
+
 		for (c in str.uIterator()) {
 			ret += switch (c.toString()) {
-				case "0": "á";
-				case "1": "é";
-				case "2": "í";
-				case "3": "ó";
-				case "4": "ú";
+				case "a": "á";
+				case "e": "é";
+				case "i": "í";
+				case "o": "ó";
+				case "u": "ú";
 				case "5": "ñ";
 				default: c.toString().toLowerCase();
 			}

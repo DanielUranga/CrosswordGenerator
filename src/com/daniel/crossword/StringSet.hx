@@ -33,7 +33,7 @@ class StringSetNode {
 	public var parent : StringSetNode;
 	public var char : Char;
 
-	static inline var isWordEndFlag = 0x80;
+	public static inline var isWordEndFlag = 0x80;
 
 	public function new(parent : StringSetNode, char : Char) {
 		this.child = new Map<Char, StringSetNode>();
@@ -294,6 +294,44 @@ class StringSet {
 		}
 	}
 
+	public static function getUncompressedBytes(bytes : Bytes) : BytesInput {
+		var uBytes = Uncompress.run(bytes);
+		return new BytesInput(uBytes);
+	}
+
+	static function skipOneChild(bytes : BytesInput) : Void {
+		var thisNodeCharCount = bytes.readByte() & ~StringSetNode.isWordEndFlag;
+		bytes.position += thisNodeCharCount;
+		for (i in 0...thisNodeCharCount) {
+			skipOneChild(bytes);
+		}
+	}
+
+	// True if the child corresponding char is found
+	static function _bytesHasWord(bytes : BytesInput, str : String) : Bool {
+		var rootNode = StringSetNode.fromBytes(bytes);
+		if (str.length==0) {
+			return rootNode.isWordEnd;
+		}
+		var char : Char = Char.fromString(str);
+		if (!rootNode.child.exists(char)) {
+			return false;
+		}
+		for (k in SortedKeys.k()) {
+			if (k == char) {
+				return _bytesHasWord(bytes, str.substr(1));
+			} else if (rootNode.child.exists(k)) {
+				skipOneChild(bytes);
+			}
+		}
+		return false;
+	}
+
+	public static function bytesHasWord(bytes : BytesInput, str : String) : Bool {
+		bytes.position = 0;
+		return _bytesHasWord(bytes, str);
+	}
+
 	static function _compress(rootNode : StringSetNode, bytes : BytesOutput) {
 		rootNode.appendToBytes(bytes);
 		for (k in SortedKeys.k()) {
@@ -330,20 +368,31 @@ class StringSet {
 	}
 
 	public static function fromCompressedFile(path : String) : StringSet {
-		return fromCompressed(File.getBytes(path));
+		Sys.print("\nLoading dictionary...");
+		var ret = fromCompressed(File.getBytes(path));
+		Sys.print(" Ready.\n");
+		return ret;
 	}
 
 	public static function fromArray(words : Array<String>) {
 		var s = new StringSet();
+		var count = 0;
 		for (w in words) {
 			s.put(StringUtil.encode(w));
+			count++;
+			if (count%10000==0) {
+				Sys.println(count + " words");
+			}
 		}
 		s.updateFiltersCache();
 		return s;
 	}
 
 	public static function fromUncompressedFile(path : String) {
-		return fromArray(File.getContent(path).split("\n"));
+		Sys.print("\nLoading dictionary...");
+		var ret = fromArray(File.getContent(path).split("\n"));
+		Sys.print(" Ready.\n");
+		return ret;
 	}
 
 }

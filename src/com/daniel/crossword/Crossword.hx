@@ -151,7 +151,6 @@ class Crossword {
 	}
 
 	public function score() : Int {
-		
 		var emptyCells = 0;
 		for (y in minY...maxY+1) {
 			for (x in minX...maxX+1) {
@@ -161,8 +160,6 @@ class Crossword {
 			}
 		}
 		return -emptyCells;
-		
-		//return -Std.int(Math.max(maxX-minX, maxY-minY));
 	}
 
 	public function toString() : String {
@@ -221,7 +218,8 @@ class Crossword {
 			for (x in minX...maxX+1) {
 				var cell = get(x, y);
 				if (cell!=emptyVal) {
-					ret += cell.toString();
+					ret += StringTools.replace(cell.toString(), "5", "ñ");
+					//ret += cell.toString();
 				} else {
 					ret += " ";
 				}

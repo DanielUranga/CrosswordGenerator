@@ -34,8 +34,17 @@ abstract Direction(Int) from Int to Int {
 
 class DirectionUtil {
 
-	static var deltaArr : Array<IntPair> = null;
-
+	static var deltaArr : Array<IntPair> = [
+		new IntPair(0, -1),
+		new IntPair(1, -1),
+		new IntPair(1, 0),
+		new IntPair(1, 1),
+		new IntPair(0, 1),
+		new IntPair(-1, -1),
+		new IntPair(-1, 0),
+		new IntPair(-1, -1)
+	];
+/*
 	public static function init() {
 		deltaArr = [
 			new IntPair(0, -1),
@@ -48,7 +57,7 @@ class DirectionUtil {
 			new IntPair(-1, -1)
 		];
 	}
-
+*/
 	public static inline function crossowrdDirs() : Array<Direction> return [S, E];
 
 	public static inline function getDelta(dir : Direction) : IntPair {
