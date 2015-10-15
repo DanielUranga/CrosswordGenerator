@@ -329,7 +329,7 @@ class StringSet {
 
 	public static function bytesHasWord(bytes : BytesInput, str : String) : Bool {
 		bytes.position = 0;
-		return _bytesHasWord(bytes, str);
+		return _bytesHasWord(bytes, StringUtil.encode(str));
 	}
 
 	static function _compress(rootNode : StringSetNode, bytes : BytesOutput) {
