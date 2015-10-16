@@ -28,25 +28,27 @@ class StringSetSerializationTest extends TestCase {
 	}
 
 	public function testFromUncompressedFile() {
+		var strUtil = new StringUtil();
 		var s = StringSet.fromUncompressedFile("src/com/daniel/crossword/dict/ES.dic");
-		assertTrue(s.has("cope"));
-		assertTrue(s.has("hispanoamericanos"));
-		assertTrue(s.has(StringUtil.encode("industrializarías")));
+		assertTrue(s.has(strUtil.encode("pestañearse")));
+		assertTrue(s.has(strUtil.encode("retárdalas")));
+		assertTrue(s.has(strUtil.encode("comentándooslos")));
 		assertFalse(s.has("abcdefg"));
 		var prevNums = [s.root.wordCount, s.root.updateWordCount(), s.nodeCount()];
 		var comp = s.compress();
 		File.saveBytes("src/com/daniel/crossword/dict/ES.compressed", comp);
 		var sUncompressed = StringSet.fromCompressed(comp);
 		var postNums = [sUncompressed.root.wordCount, sUncompressed.root.updateWordCount(), sUncompressed.nodeCount()];
-		assertTrue(sUncompressed.has("cope"));
-		assertTrue(sUncompressed.has("hispanoamericanos"));
-		assertTrue(sUncompressed.has(StringUtil.encode("industrializarías")));
+		assertTrue(sUncompressed.has(strUtil.encode("pestañearse")));
+		assertTrue(sUncompressed.has(strUtil.encode("retárdalas")));
+		assertTrue(sUncompressed.has(strUtil.encode("comentándooslos")));
 		assertFalse(sUncompressed.has("abcdefg"));
 		assertTrue(structureIsValid(sUncompressed.root, null, "*"));
 		
-		for (i in 0...3) {
-			assertEquals(prevNums[i], postNums[i]);
-		}
+		assertEquals(prevNums[0], postNums[0]);
+		assertEquals(prevNums[1], postNums[1]);
+		assertEquals(prevNums[2], postNums[2]);
+		
 		sUncompressed.startFilter();
 		sUncompressed.moveFilter("*");
 		sUncompressed.moveFilter("a");

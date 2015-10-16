@@ -327,9 +327,19 @@ class StringSet {
 		return false;
 	}
 
-	public static function bytesHasWord(bytes : BytesInput, str : String) : Bool {
+	public static function bytesHasWord(bytes : BytesInput, str : String, strUtil : StringUtil) : Bool {
 		bytes.position = 0;
-		return _bytesHasWord(bytes, StringUtil.encode(str));
+		return _bytesHasWord(bytes, strUtil.encode(str));
+	}
+
+	public static function bytesHasSimilarWord(bytes : BytesInput, str : String, strUtil : StringUtil) : String {
+		var options = strUtil.generateOptionals(str);
+		for (o in options) {
+			if (bytesHasWord(bytes, o, strUtil)) {
+				return o;
+			}
+		}
+		return null;
 	}
 
 	static function _compress(rootNode : StringSetNode, bytes : BytesOutput) {
@@ -375,10 +385,11 @@ class StringSet {
 	}
 
 	public static function fromArray(words : Array<String>) {
+		var strUtil = new StringUtil();
 		var s = new StringSet();
 		var count = 0;
 		for (w in words) {
-			s.put(StringUtil.encode(w));
+			s.put(strUtil.encode(w));
 			count++;
 			if (count%10000==0) {
 				Sys.println(count + " words");
@@ -390,7 +401,28 @@ class StringSet {
 
 	public static function fromUncompressedFile(path : String) {
 		Sys.print("\nLoading dictionary...");
-		var ret = fromArray(File.getContent(path).split("\n"));
+		var ret = new StringSet();
+		var f = File.read(path);
+		var count = 0;
+		var strUtil = new StringUtil();
+		while (!f.eof()) {
+			var word = "";
+			try {
+				word = f.readLine();
+			} catch (d : Dynamic) {
+				while (!f.eof()) {
+					word += f.readString(1);
+				}
+			}
+			if (word.length>0) {
+				ret.put(strUtil.encode(word));
+				if (count%10000==0) {
+					Sys.println(count + " words");
+				}
+				count++;
+			}
+		}
+		f.close();
 		Sys.print(" Ready.\n");
 		return ret;
 	}
