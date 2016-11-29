@@ -5,6 +5,7 @@
 #-js bin/js/test.js
 -cpp bin/cpp
 -lib unifill
+-lib thx.core
 -cp src
 -main Test
 #-lib hxtelemetry
