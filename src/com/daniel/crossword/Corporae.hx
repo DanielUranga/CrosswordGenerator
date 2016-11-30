@@ -1,9 +1,9 @@
 package com.daniel.crossword;
 
+import haxe.Json;
 import sys.io.File;
 import sys.io.FileInput;
 import com.daniel.crossword.StringUtil;
-import thx.Strings;
 
 /**
  * ...
@@ -15,10 +15,13 @@ class Corporae
 	var strUtil : StringUtil;
 	var wordsCount : Map<String, Int>;
 
-	public function new(inputFilesPaths : Array<String>)
+	public function new()
 	{
 		strUtil = new StringUtil();
 		wordsCount = new Map<String, Int>();
+	}
+
+	public function load(inputFilesPaths : Array<String>) {
 		for (corporaPath in inputFilesPaths)
 		{
 			var fileInput = File.read(corporaPath);
@@ -28,7 +31,21 @@ class Corporae
 		filterWordsCount();
 		trace(wordsCount);
 	}
-
+	
+	public function toJson() : String {
+		return Json.stringify(wordsCount);
+	}
+	
+	public static function fromJson(json : String) : Corporae {
+		var ret = new Corporae();
+		ret.wordsCount = Json.parse(json);
+		return ret;
+	}
+	
+	public function contains(word : String) : Bool {
+		return wordsCount.exists(word);
+	}
+	
 	function processCorpora(input : FileInput)
 	{
 		while (!input.eof())
@@ -84,8 +101,8 @@ class Corporae
 		var currentByte = StringTools.fastCodeAt(letter, 0);
 		if (currentByte == 32 || currentByte == 10)
 		{
-			//return strUtil.encode(word);
-			return word.toLowerCase();
+			return strUtil.encode(word);
+			//return word.toLowerCase();
 		}
 		else {
 			return "";
@@ -101,7 +118,6 @@ class Corporae
 			var nextByte = input.readByte();
 			if (currentByte != 195)
 			{
-				//throw "Error " + currentByte + " " + nextByte;
 				return "<";
 			}
 			switch ([currentByte, nextByte])
@@ -118,17 +134,6 @@ class Corporae
 				case [195, 154]: letter = "ú";
 				case [195, 177]: letter = "ñ";
 				case [195, 188]: letter = "ü";
-				/*
-				case [195, 185]: letter = "<"; // this is "ù" which is not supported
-				case [195, 170]: letter = "<"; // this is "ê" which is not supported
-				case [195, 168]: letter = "<"; // this is "è" which is not supported
-				case [195, 160]: letter = "<"; // this is "å" which is not supported
-				case [195, 164]: letter = "<"; // this is "ä" which is not supported
-				case [195, 171]: letter = "<"; // this is "ë" which is not supported
-				case [195, 175]: letter = "<"; // this is "ï" which is not supported
-				case [195, 167]: letter = "<"; // this is "ç" which is not supported
-				default: { trace("non alpha: " + letter + " = " + StringTools.fastCodeAt(letter, 0) + ", nextByte = " + nextByte); throw "Error";  }
-				*/
 				default: letter = "<";
 			}
 		}
@@ -137,14 +142,18 @@ class Corporae
 
 	function isAlpha(input : String) : Bool
 	{
-		return Strings.isAlpha(input) ||
-		input == "á" ||
-		input == "é" ||
-		input == "í" ||
-		input == "ó" ||
-		input == "ú" ||
-		input == "ü" ||
-		input == "ñ";
+		var asInt = StringTools.fastCodeAt(input, 0);
+		return (
+			(asInt >= "a".code && asInt <= "z".code) ||
+			(asInt >= "A".code && asInt <= "Z".code) ||
+			input == "á" || input == "Á" ||
+			input == "é" || input == "É" ||
+			input == "í" || input == "Í" ||
+			input == "ó" || input == "Ó" ||
+			input == "ú" || input == "Ú" ||
+			input == "ü" || input == "Ü" ||
+			input == "ñ" || input == "Ñ"
+		);
 	}
 
 }
