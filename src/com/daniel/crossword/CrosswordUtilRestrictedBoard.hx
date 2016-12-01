@@ -90,7 +90,8 @@ class CrosswordUtilRestrictedBoard {
 			possibleWords.pop();
 			if (crossword.putWordScore(starPos, word, dict)>0) {
 				crossword.putWord(starPos, word);
-				Sys.println(" - " + word);
+				var decoder = new StringUtil();
+				Sys.println(" - " + decoder.decode(word));
 				return true;
 			}
 		}
@@ -106,7 +107,7 @@ class CrosswordUtilRestrictedBoard {
 	public static function fillCrossword(boardWidth : Int, boardHeight : Int, dict : StringSet) : Crossword {
 		var crossword = new Crossword();
 		var iterationsWithouthAdding = 0;
-		var maxIterationsWithoutAdding = 50;
+		var maxIterationsWithoutAdding = 60;
 		var maxWordLen = Std.int(Math.max(boardWidth, boardHeight));
 		while (iterationsWithouthAdding<maxIterationsWithoutAdding) {
 

@@ -1,6 +1,6 @@
 package com.daniel.crossword;
 
-import haxe.Json;
+import tink.Json;
 import sys.io.File;
 import sys.io.FileInput;
 import com.daniel.crossword.StringUtil;
@@ -27,19 +27,23 @@ class Corporae
 			var fileInput = File.read(corporaPath);
 			processCorpora(fileInput);
 			fileInput.close();
+			trace("loaded: " + corporaPath);
 		}
 		filterWordsCount();
-		trace(wordsCount);
 	}
 	
 	public function toJson() : String {
 		return Json.stringify(wordsCount);
 	}
 	
-	public static function fromJson(json : String) : Corporae {
-		var ret = new Corporae();
-		ret.wordsCount = Json.parse(json);
-		return ret;
+	public function fromJson(json : String) : Void {
+		wordsCount = Json.parse(json);
+		if (wordsCount == null) trace("NULL");
+		trace("asdads: " + wordsCount);
+	}
+	
+	public function toString() {
+		return wordsCount.toString();
 	}
 	
 	public function contains(word : String) : Bool {

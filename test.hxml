@@ -5,7 +5,7 @@
 #-js bin/js/test.js
 -cpp bin/cpp
 -lib unifill
--lib thx.core
+-lib tink_json
 -cp src
 -main Test
 #-lib hxtelemetry

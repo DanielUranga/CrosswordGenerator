@@ -384,7 +384,6 @@ class StringSet {
 		return ret;
 	}
 
-	/*
 	public static function fromArray(words : Array<String>) {
 		var strUtil = new StringUtil();
 		var s = new StringSet();
@@ -399,7 +398,6 @@ class StringSet {
 		s.updateFiltersCache();
 		return s;
 	}
-	*/
 
 	public static function fromUncompressedFile(path : String, ?corpora : Corporae = null) {
 		Sys.print("\nLoading dictionary...");
@@ -416,12 +414,14 @@ class StringSet {
 					word += f.readString(1);
 				}
 			}
-			if (word.length>0 && (corpora == null || corpora.contains(word))) {
-				ret.put(strUtil.encode(word));
-				if (count%10000==0) {
-					Sys.println(count + " words");
+			if (word.length > 0) {
+				if (corpora == null || corpora.contains(word)) {
+					ret.put(strUtil.encode(word));
+					if (count%10000==0) {
+						Sys.println(count + " words");
+					}
+					count++;
 				}
-				count++;
 			}
 		}
 		f.close();

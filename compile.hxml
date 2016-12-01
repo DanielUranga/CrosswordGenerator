@@ -5,5 +5,6 @@
 #-js bin/js/test.js
 -cpp bin/cpp
 -lib unifill
+-lib tink_json
 -cp src
 -main Main
