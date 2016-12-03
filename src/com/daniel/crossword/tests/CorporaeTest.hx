@@ -9,8 +9,11 @@ class CorporaeTest extends TestCase {
 	public function test() {
 		var corporae = new Corporae();
 		var paths = [];
-		for (i in 0...1) {
+		for (i in 0...10) {
 			paths.push("src/com/daniel/crossword/corporae/spanish_billion_words_0" + i);
+		}
+		for (i in 10...100) {
+			paths.push("src/com/daniel/crossword/corporae/spanish_billion_words_" + i);
 		}
 		corporae.load(paths);
 		var json = corporae.toJson();

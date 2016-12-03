@@ -10,8 +10,9 @@ class Test {
 		r.add(new StringSetSerializationTest());
 		r.add(new BitsTest());
 		r.add(new CharIterTest());
-		*/
 		r.add(new CorporaeTest());
+		*/
+		r.add(new DictionaryFilterTest());
 		r.run();
 	}
 	

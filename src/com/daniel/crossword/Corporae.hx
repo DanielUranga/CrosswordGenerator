@@ -24,10 +24,14 @@ class Corporae
 	public function load(inputFilesPaths : Array<String>) {
 		for (corporaPath in inputFilesPaths)
 		{
-			var fileInput = File.read(corporaPath);
-			processCorpora(fileInput);
-			fileInput.close();
-			trace("loaded: " + corporaPath);
+			try {
+				var fileInput = File.read(corporaPath);
+				processCorpora(fileInput);
+				fileInput.close();
+				trace("loaded: " + corporaPath);
+			} catch (d : Dynamic) {
+				trace("error: " + corporaPath);
+			}
 		}
 		filterWordsCount();
 	}
@@ -38,8 +42,6 @@ class Corporae
 	
 	public function fromJson(json : String) : Void {
 		wordsCount = Json.parse(json);
-		if (wordsCount == null) trace("NULL");
-		trace("asdads: " + wordsCount);
 	}
 	
 	public function toString() {

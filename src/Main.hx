@@ -1,4 +1,3 @@
-import com.daniel.crossword.Corporae;
 import com.daniel.crossword.Crossword;
 import com.daniel.crossword.CrosswordUtilRestrictedBoard;
 import com.daniel.crossword.Direction;
@@ -40,18 +39,12 @@ class Main {
 		}
 		crossword.printCrossword();
 		*/
-		trace(1);
-		var corpora = new Corporae();
-		corpora.fromJson(File.getContent("src/com/daniel/crossword/corporae/wordfreqs.json"));
-		trace(2);
-		corpora.toString();
-		var d = StringSet.fromUncompressedFile("src/com/daniel/crossword/dict/ES.dic", corpora);		
-		trace(3);
+		var d = StringSet.fromUncompressedFile("src/com/daniel/crossword/dict/es_filtered.dic");
 		for (i in 0...10) {
 			var c = CrosswordUtilRestrictedBoard.fillCrossword(12, 14, d);
 			//Sys.println(c.toString());
 			c.printCrossword();
-			Sys.println('(${c.score()})');
+			Sys.println('(${c.score()})\n\n');
 		}
 
 	}
